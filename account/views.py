@@ -41,6 +41,8 @@ class ConfirmAPIView(APIView):
             confirmcode = code_list[0]
             confirmcode.user.is_active = True
             confirmcode.user.save()
+            #change
+            print(234)
 
 
             code_list.delete()
