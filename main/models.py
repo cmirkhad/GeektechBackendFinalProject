@@ -6,7 +6,7 @@ class News(models.Model):
     publication_date = models.DateTimeField()
     short_description = models.TextField()
     full_description = models.TextField()
-    image = models.ImageField(upload_to="news")
+    image = models.ImageField(upload_to="news", null=True, blank=True)
     link = models.URLField()
     is_main = models.BooleanField(default=False)
 
@@ -30,7 +30,6 @@ class Law(models.Model):
     short_description = models.TextField()
     full_description = models.TextField()
     file = models.FileField(upload_to="files")
-
     type = models.IntegerField(choices=LAW_TYPES, default=1)
 
     def __str__(self):
