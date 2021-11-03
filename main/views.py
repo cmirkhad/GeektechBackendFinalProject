@@ -4,7 +4,8 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView, ListAPIView, \
+    ListCreateAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -99,18 +100,18 @@ class PublicationListAPIView(ListCreateAPIView):
         return Response(data={"Message": "Publication added"})
 
 
-class PublicationDetailUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
+class PublicationDetailAPIView(RetrieveAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
 
 
-class NewsDetailDeleteAPIView(RetrieveDestroyAPIView):
+class NewsDetailAPIView(RetrieveAPIView):
 
-    permission_classes = (IsAuthenticated, )
+
     queryset = News.objects.all()
     serializer_class = NewsSerializer
 
 
-class LawDetailUpdateDeleteAPIView(RetrieveUpdateDestroyAPIView):
+class LawDetailAPIView(RetrieveAPIView):
     queryset = Law.objects.all()
     serializer_class = LawSerializer
