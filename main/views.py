@@ -4,20 +4,23 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import status
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from main.models import News, Law, Publication
-from main.serializers import NewsSerializer, LawSerializer, PublicationSerializer
+from main.serializers import NewsSerializer, LawSerializer, PublicationSerializer, NewsCreateValidateSerializer, \
+    LawCreateValidateSerializer, PublicationValidateCreateSerializer
 
 
-class NewsListAPIView(APIView):
-    def get(self, request):
-        news = News.objects.all()
-        data = NewsSerializer(news, many=True, context={'request': request}).data
-        return Response(data=data)
+class NewsListAPIView(ListCreateAPIView):
+    pagination_class = PageNumberPagination
+
+    serializer_class = NewsSerializer
+    queryset = News.objects.all()
 
     def post(self, request):
         form = request.data
@@ -40,12 +43,11 @@ class NewsListAPIView(APIView):
         return Response(data={"Message": "News added"})
 
 
-class LawListAPIView(APIView):
-    def get(self, request):
-        law = Law.objects.all()
-        data = LawSerializer(law, many=True, context={"request": request}).data
-        return Response(data=data)
+class LawListAPIView(ListAPIView):
 
+    queryset = Law.objects.all()
+    serializer_class = LawSerializer
+    pagination_class = PageNumberPagination
     def post(self, request):
         form = request.data
         serializer = LawCreateValidateSerializer(data=form)
@@ -70,13 +72,10 @@ class LawListAPIView(APIView):
         return Response(data={"Message": "Law added"})
 
 
-class PublicationListAPIView(APIView):
-    permission_classes = ()
-
-    def get(self, request):
-        law = Publication.objects.all()
-        data = PublicationSerializer(law, many=True, context={"request": request}).data
-        return Response(data=data)
+class PublicationListAPIView(ListCreateAPIView):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+    pagination_class = PageNumberPagination
 
     def post(self, request):
         form = request.data
