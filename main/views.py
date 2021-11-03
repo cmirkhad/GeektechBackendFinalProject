@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render
 
 # Create your views here.
+from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, RetrieveDestroyAPIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -20,6 +21,13 @@ class NewsListAPIView(APIView):
 
     def post(self, request):
         form = request.data
+        serializer = NewsCreateValidateSerializer(data=form)
+        if not serializer.is_valid():
+            return Response(
+                data={'message': 'error',
+                      'errors': serializer.errors},
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
         title = form['title']
         short_description = form['short_description']
         full_description = form['full_description']
@@ -40,6 +48,13 @@ class LawListAPIView(APIView):
 
     def post(self, request):
         form = request.data
+        serializer = LawCreateValidateSerializer(data=form)
+        if not serializer.is_valid():
+            return Response(
+                data={'message': 'error',
+                      'errors': serializer.errors},
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
         title = form['title']
         short_description = form['short_description']
         full_description = form['full_description']
@@ -49,7 +64,7 @@ class LawListAPIView(APIView):
                            short_description=short_description,
                            full_description=full_description,
                            publication_date=datetime.datetime.now(),
-                           type=type,
+                           type=type
 
                            )
         return Response(data={"Message": "Law added"})
@@ -65,14 +80,22 @@ class PublicationListAPIView(APIView):
 
     def post(self, request):
         form = request.data
+        serializer = PublicationValidateCreateSerializer(data=form)
+        if not serializer.is_valid():
+            return Response(
+                data={'message': 'error',
+                      'errors': serializer.errors},
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
         title = form['title']
         short_description = form['short_description']
         full_description = form['full_description']
-
+        type = form['type']
         Publication.objects.create(title=title,
                                    short_description=short_description,
                                    full_description=full_description,
-                                   publication_date=datetime.datetime.now()
+                                   publication_date=datetime.datetime.now(),
+                                   type=type
                                    )
         return Response(data={"Message": "Publication added"})
 
